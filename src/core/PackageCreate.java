@@ -1,10 +1,10 @@
 package core;
 
-public class CreatePackage extends Create {
+public class PackageCreate extends Create {
     private final int packageSize;
 
-    public CreatePackage(String name, int packageSize) {
-        super(name);
+    public PackageCreate(String name, int delayMean, int packageSize) {
+        super(name, delayMean);
         this.setTNext(0.0);
         this.packageSize = packageSize;
     }
@@ -17,6 +17,7 @@ public class CreatePackage extends Create {
             if (nextRoute != null) {
                 var destination = nextRoute.getDestination();
                 destination.inAct(job);
+                changeQuantity(1);
             } else {
                 changeFailures(1);
             }
@@ -33,5 +34,9 @@ public class CreatePackage extends Create {
     public void printResult() {
         System.out.println("Package size: " + packageSize);
         System.out.println("Failures: " + getFailures());
+    }
+
+    @Override
+    public void doStatistics(double delta) {
     }
 }
