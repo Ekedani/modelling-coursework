@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Model {
     private ArrayList<Element> elements;
@@ -9,6 +10,10 @@ public class Model {
 
     public Model() {
         elements = new ArrayList<>();
+    }
+
+    public Model(List<Element> elements) {
+        this.elements = new ArrayList<>(elements);
     }
 
     public void simulate(double time) {
@@ -23,11 +28,21 @@ public class Model {
                 element.doStatistics(tNext - tCurr);
             }
             tCurr = tNext;
+            for (var element : elements) {
+                element.setTCurr(tCurr);
+            }
+
             for (Element element : elements) {
                 if (element.getTNext() == tCurr) {
                     element.outAct();
                 }
             }
+        }
+    }
+
+    public void printResults() {
+        for (Element element : elements) {
+            element.printResult();
         }
     }
 }

@@ -9,8 +9,21 @@ public class Dispose extends Element {
         super(name);
     }
 
+    public double getAverageTimeInModel() {
+        return processedJobs.stream().mapToDouble(Job::getTimeInModel).average().orElse(0.0);
+    }
+
+    public double getMaxTimeInModel() {
+        return processedJobs.stream().mapToDouble(Job::getTimeInModel).max().orElse(0.0);
+    }
+
+    public double getMinTimeInModel() {
+        return processedJobs.stream().mapToDouble(Job::getTimeInModel).min().orElse(0.0);
+    }
+
     @Override
     public void inAct(Job job) {
+        job.setTimeOut(getTCurr());
         processedJobs.add(job);
     }
 
@@ -26,6 +39,13 @@ public class Dispose extends Element {
 
     @Override
     public void printResult() {
+        System.out.println(
+                getName() + ": " +
+                        "Quantity = " + getQuantity() +
+                        ", Average time in system: " + getAverageTimeInModel() +
+                        ", Max time in system: " + getMaxTimeInModel() +
+                        ", Min time in system: " + getMinTimeInModel()
+        );
     }
 
     @Override

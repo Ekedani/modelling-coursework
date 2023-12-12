@@ -29,10 +29,10 @@ public class DelayProcess extends Process {
     @Override
     public void outAct() {
         var jobs = delayedJobs.get(getTNext());
-        var nextRoute = getNextRoute();
-        if (nextRoute != null) {
-            var destination = nextRoute.getDestination();
-            for (Job job : jobs) {
+        for (Job job : jobs) {
+            var nextRoute = getNextRoute();
+            if (nextRoute != null) {
+                var destination = nextRoute.getDestination();
                 destination.inAct(job);
             }
         }
@@ -51,6 +51,11 @@ public class DelayProcess extends Process {
 
     @Override
     public void printResult() {
+        System.out.println(
+                getName() + ": " +
+                        "Quantity = " + getQuantity() +
+                        ", Average workload: " + getWorkTime() / getTCurr()
+        );
     }
 
     @Override

@@ -18,7 +18,12 @@ public class ConveyorModelFactory {
         var dispose = new Dispose("Dispose");
 
         configureBasicConveyor(packageCreate, processors, transports, dispose);
-        return null;
+        var elements = new ArrayList<Element>();
+        elements.add(packageCreate);
+        elements.addAll(processors);
+        elements.addAll(transports);
+        elements.add(dispose);
+        return new Model(elements);
     }
 
     private static void configureBasicConveyor(PackageCreate packageCreate, List<ChannelProcess> processors, List<DelayProcess> transports, Dispose dispose) {
@@ -37,11 +42,7 @@ public class ConveyorModelFactory {
                     new Route(nextTransport, 0)
             );
         }
-        for (var processor : processors) {
-            processor.addRoutes(
-                    new Route(dispose, 0)
-            );
-        }
+        processors.forEach(processor -> processor.addRoutes(new Route(dispose, 0)));
     }
 
     private static List<ChannelProcess> createNProcessors(int n, double delayMean, int channelsCount, int maxQueueSize) {

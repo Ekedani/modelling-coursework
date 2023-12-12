@@ -31,10 +31,9 @@ public class ChannelProcess extends Process {
 
     @Override
     public int getState() {
-        int state = channels.size() > 0 ? 1 : 0;
+        int state = 0;
         for (Channel channel : channels) {
-            state *= channel.getState();
-            if (state == 0) break;
+            state |= channel.getState();
         }
         return state;
     }
@@ -82,10 +81,19 @@ public class ChannelProcess extends Process {
 
     @Override
     public void printResult() {
+        System.out.println(
+                getName() + ": " +
+                        "Quantity = " + getQuantity() +
+                        ", Failures: " + getFailures() +
+                        ", Average queue size: " + queuesSum / getTCurr() +
+                        ", Average workload: " + getWorkTime() / getTCurr()
+        );
+
     }
 
     @Override
     public void doStatistics(double delta) {
+        super.doStatistics(delta);
         queuesSum += queue.size() * delta;
     }
 
