@@ -4,13 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
-    private ArrayList<Element> elements;
+    private final ArrayList<Element> elements;
     private double tCurr = 0;
     private double tNext = Double.MAX_VALUE;
-
-    public Model() {
-        elements = new ArrayList<>();
-    }
 
     public Model(List<Element> elements) {
         this.elements = new ArrayList<>(elements);
@@ -45,4 +41,5 @@ public class Model {
             element.printResult();
         }
     }
+
 }

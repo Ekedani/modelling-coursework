@@ -51,4 +51,9 @@ public class Dispose extends Element {
     @Override
     public void doStatistics(double delta) {
     }
+
+    @Override
+    public int getQuantity() {
+        return processedJobs.size();
+    }
 }

@@ -126,6 +126,14 @@ public class ChannelProcess extends Process {
         return channels.stream().filter(channel -> channel.getTNext() == minTNext).collect(Collectors.toList());
     }
 
+    public int getQueueSize() {
+        return queue.size();
+    }
+
+    public int getMaxQueueSize() {
+        return maxQueueSize;
+    }
+
     private static class Channel {
         private Job currentJob = null;
         private double tNext = Double.MAX_VALUE;

@@ -12,12 +12,38 @@ public class ConveyorModelFactory {
         final double transportsDelayMean = 1;
         final double lastTransportDelayMean = 5;
 
-        var packageCreate = new PackageCreate("PackageCreate", 1, 4);
+        var packageCreate = new PackageCreate("Package Creator", 1, 4);
         var processors = createNProcessors(processorsCount, processorsDelayMean, processorsChannelsCount, processorsMaxQueueSize);
         var transports = createNTransports(processorsCount, transportsDelayMean, lastTransportDelayMean);
         var dispose = new Dispose("Dispose");
 
         configureBasicConveyor(packageCreate, processors, transports, dispose);
+
+        var elements = new ArrayList<Element>();
+        elements.add(packageCreate);
+        elements.addAll(processors);
+        elements.addAll(transports);
+        elements.add(dispose);
+        return new Model(elements);
+    }
+
+    public static Model createCustomConveyorModel(
+            int packageCreateDelayMean,
+            int packageSize,
+            int processorsCount,
+            double processorsDelayMean,
+            int processorsChannelsCount,
+            List<Integer> processorsMaxQueueSizes,
+            double transportsDelayMean,
+            double lastTransportDelayMean
+    ) {
+        var packageCreate = new PackageCreate("Package Creator", packageCreateDelayMean, packageSize);
+        var processors = createNProcessors(processorsCount, processorsDelayMean, processorsChannelsCount, processorsMaxQueueSizes);
+        var transports = createNTransports(processorsCount, transportsDelayMean, lastTransportDelayMean);
+        var dispose = new Dispose("Dispose");
+
+        configureCustomConveyor(packageCreate, processors, transports, dispose);
+
         var elements = new ArrayList<Element>();
         elements.add(packageCreate);
         elements.addAll(processors);
@@ -45,11 +71,57 @@ public class ConveyorModelFactory {
         processors.forEach(processor -> processor.addRoutes(new Route(dispose, 0)));
     }
 
+    private static void configureCustomConveyor(
+            PackageCreate packageCreate,
+            List<ChannelProcess> processors,
+            List<DelayProcess> transports,
+            Dispose dispose
+    ) {
+        var conveyorSize = processors.size();
+        var firstProcessor = processors.get(0);
+        packageCreate.addRoutes(
+                new Route(processors.get(0), 1, () -> firstProcessor.getState() == 1),
+                new Route(transports.get(0), 0)
+        );
+        for (int i = 0; i < conveyorSize; i++) {
+            var currentTransport = transports.get(i);
+            var nextProcessor = processors.get((i + 1) % conveyorSize);
+            var nextTransport = transports.get((i + 1) % conveyorSize);
+            if (nextProcessor.getMaxQueueSize() == 0) {
+                currentTransport.addRoutes(
+                        new Route(nextProcessor, 1, () -> nextProcessor.getState() == 1),
+                        new Route(nextTransport, 0)
+                );
+            } else {
+                currentTransport.addRoutes(
+                        new Route(nextProcessor, 1, () -> nextProcessor.getQueueSize() == nextProcessor.getMaxQueueSize()),
+                        new Route(nextTransport, 0)
+                );
+            }
+
+        }
+        processors.forEach(processor -> processor.addRoutes(new Route(dispose, 0)));
+    }
+
     private static List<ChannelProcess> createNProcessors(int n, double delayMean, int channelsCount, int maxQueueSize) {
         var processors = new ArrayList<ChannelProcess>();
         for (int i = 0; i < n; i++) {
             var name = "Processor " + (i + 1);
             var processor = new ChannelProcess(name, delayMean, channelsCount, maxQueueSize);
+            processor.setDistribution(Distribution.EXPONENTIAL);
+            processors.add(processor);
+        }
+        return processors;
+    }
+
+    private static List<ChannelProcess> createNProcessors(int n, double delayMean, int channelsCount, List<Integer> maxQueueSizes) {
+        if (maxQueueSizes.size() != n) {
+            throw new IllegalArgumentException("maxQueueSizes size must be equal to n");
+        }
+        var processors = new ArrayList<ChannelProcess>();
+        for (int i = 0; i < n; i++) {
+            var name = "Processor " + (i + 1);
+            var processor = new ChannelProcess(name, delayMean, channelsCount, maxQueueSizes.get(i));
             processor.setDistribution(Distribution.EXPONENTIAL);
             processors.add(processor);
         }

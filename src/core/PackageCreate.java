@@ -32,8 +32,11 @@ public class PackageCreate extends Create {
 
     @Override
     public void printResult() {
-        System.out.println("Package size: " + packageSize);
-        System.out.println("Failures: " + getFailures());
+        System.out.println(
+                getName() + ": " +
+                        "Quantity = " + getQuantity() +
+                        ", Created packages = " + getQuantity() / packageSize
+        );
     }
 
     @Override
