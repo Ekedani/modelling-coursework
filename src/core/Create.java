@@ -3,10 +3,6 @@ package core;
 public abstract class Create extends Element {
     private int failures = 0;
 
-    public Create(String name) {
-        super(name);
-    }
-
     public Create(String name, double delayMean) {
         super(name);
         setDelayMean(delayMean);
@@ -15,6 +11,12 @@ public abstract class Create extends Element {
     @Override
     public void inAct(Job job) {
         throw new UnsupportedOperationException("InAct is not supported for Create");
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        failures = 0;
     }
 
     public int getFailures() {

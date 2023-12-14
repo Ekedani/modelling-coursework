@@ -1,12 +1,9 @@
 package core;
 
 public class Route {
-    private Element destination = null;
+    private Element destination;
     private int priority = 0;
     private BlockCondition block = null;
-
-    public Route() {
-    }
 
     public Route(Element destination) {
         this.destination = destination;

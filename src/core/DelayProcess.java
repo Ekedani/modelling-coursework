@@ -67,4 +67,21 @@ public class DelayProcess extends Process {
     public int getState() {
         return delayedJobs.size() > 1 ? 1 : 0;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        delayedJobs.clear();
+        delayedJobs.put(Double.MAX_VALUE, new ArrayList<>());
+    }
+
+    @Override
+    public List<Job> getAllJobs() {
+        List<Job> jobs = new ArrayList<>();
+        for (List<Job> list : delayedJobs.values()) {
+            jobs.addAll(list);
+        }
+        return jobs;
+    }
+
 }

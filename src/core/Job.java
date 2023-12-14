@@ -2,7 +2,7 @@ package core;
 
 public class Job {
     private final double timeIn;
-    private double timeOut = 0;
+    private double timeOut = Double.MAX_VALUE;
 
     public Job(double timeIn) {
         this.timeIn = timeIn;

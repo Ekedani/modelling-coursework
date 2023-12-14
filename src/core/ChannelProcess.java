@@ -108,6 +108,29 @@ public class ChannelProcess extends Process {
         return tNext;
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        queue.clear();
+        queuesSum = 0.0;
+        for (Channel channel : channels) {
+            channel.setCurrentJob(null);
+            channel.setTNext(Double.MAX_VALUE);
+        }
+    }
+
+    @Override
+    public List<Job> getAllJobs() {
+        var jobs = new ArrayList<Job>();
+        for (Channel channel : channels) {
+            if (channel.getCurrentJob() != null) {
+                jobs.add(channel.getCurrentJob());
+            }
+        }
+        jobs.addAll(queue);
+        return jobs;
+    }
+
     private Channel getFreeChannel() {
         for (Channel channel : channels) {
             if (channel.getState() == 0) {

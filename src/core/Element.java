@@ -124,13 +124,9 @@ public abstract class Element {
         this.routes.sort((a, b) -> b.getPriority() - a.getPriority());
     }
 
-    public void printRoutes() {
-        for (var route : routes) {
-            System.out.println(
-                    "From " + this.getName() + " to " +
-                    route.getDestination().getName() + ", priority: "
-                    + route.getPriority()
-            );
-        }
+    public void reset() {
+        tCurr = 0.0;
+        tNext = Double.MAX_VALUE;
+        quantity = 0;
     }
 }
