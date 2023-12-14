@@ -15,6 +15,11 @@ public class Model {
         Element.resetNextId();
     }
 
+    /**
+     * Simulates events up to a specified time using the nearest event algorithm.
+     *
+     * @param time the time up to which the simulation will run.
+     */
     public void simulate(double time) {
         while (tCurr < time) {
             tNext = Double.MAX_VALUE;
@@ -41,21 +46,25 @@ public class Model {
 
     public Map<String, Double> getResults() {
         var results = new LinkedHashMap<String, Double>();
-       /* for (Element element : elements) {
+        var jobs = new ArrayList<Job>();
+        var averageWorkingProcesses = 0.0;
+        for (Element element : elements) {
             if (element instanceof Create) {
-                results.put(element.getName() + " failures", (double) ((Create) element).getFailures());
-            } else if (element instanceof ChannelProcess) {
-                results.put(element.getName() + " average queue size", ((ChannelProcess) element).getAverageQueueSize());
+                results.put(element.getName() + " created", (double) element.getQuantity());
+            /*} else if (element instanceof ChannelProcess) {
+                results.put(element.getName() + " average buffer size", ((ChannelProcess) element).getAverageQueueSize());
                 results.put(element.getName() + " average workload", ((ChannelProcess) element).getAverageWorkload());
+                jobs.addAll(((Process) element).getAllJobs());
             } else if (element instanceof DelayProcess) {
                 results.put(element.getName() + " average queue size", ((DelayProcess) element).getAverageQueueSize());
                 results.put(element.getName() + " average workload", ((DelayProcess) element).getAverageWorkload());
+                jobs.addAll(((Process) element).getAllJobs());*/
             } else if (element instanceof Dispose) {
-                results.put(element.getName() + " average queue size", ((Dispose) element).getAverageQueueSize());
-                results.put(element.getName() + " average workload", ((Dispose) element).getAverageWorkload());
+                results.put(element.getName() + " disposed", (double) element.getQuantity());
+                jobs.addAll(((Dispose) element).getAllJobs());
             }
-        }*/
-        return null;
+        }
+        return results;
     }
 
     public void printResults() {

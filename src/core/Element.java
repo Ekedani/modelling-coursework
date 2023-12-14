@@ -124,6 +124,9 @@ public abstract class Element {
         this.routes.sort((a, b) -> b.getPriority() - a.getPriority());
     }
 
+    /**
+     * Resets the element to its initial state. This method is called if a model that contains this element is reset.
+     */
     public void reset() {
         tCurr = 0.0;
         tNext = Double.MAX_VALUE;

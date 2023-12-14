@@ -10,11 +10,8 @@ public class FunRand {
      * distribution
      */
     public static double Exponential(double timeMean) {
-        double a = 0;
-        while (a == 0) {
-            a = Math.random();
-        }
-        a = -timeMean * Math.log(a);
-        return a;
+        var randomValue = 0.0;
+        while (randomValue == 0) randomValue = Math.random();
+        return -timeMean * Math.log(randomValue);
     }
 }

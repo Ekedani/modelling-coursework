@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Dispose extends Element {
     ArrayList<Job> processedJobs = new ArrayList<>();
@@ -55,5 +56,9 @@ public class Dispose extends Element {
     @Override
     public int getQuantity() {
         return processedJobs.size();
+    }
+
+    public List<Job> getAllJobs() {
+        return processedJobs;
     }
 }
