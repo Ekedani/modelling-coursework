@@ -1,7 +1,7 @@
 package core;
 
 public class Route {
-    private Element destination;
+    private final Element destination;
     private int priority = 0;
     private BlockCondition block = null;
 

@@ -5,7 +5,7 @@ public class Main {
         basicConveyorModel.printResults();*/
 
         var customConveyorModel = ConveyorModelFactory.createBasicConveyorModel();
-        customConveyorModel.simulate(5000);
+        customConveyorModel.simulate(2500);
         customConveyorModel.printResults();
     }
 }
