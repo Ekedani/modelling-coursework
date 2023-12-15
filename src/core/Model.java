@@ -8,7 +8,6 @@ import java.util.Map;
 public class Model {
     private final ArrayList<Element> elements;
     private double tCurr = 0;
-    private double tNext = Double.MAX_VALUE;
 
     public Model(List<Element> elements) {
         this.elements = new ArrayList<>(elements);
@@ -22,7 +21,7 @@ public class Model {
      */
     public void simulate(double time) {
         while (tCurr < time) {
-            tNext = Double.MAX_VALUE;
+            double tNext = Double.MAX_VALUE;
             for (Element element : elements) {
                 if (element.getTNext() < tNext) {
                     tNext = element.getTNext();
@@ -46,36 +45,56 @@ public class Model {
 
     public Map<String, Double> getResults() {
         var results = new LinkedHashMap<String, Double>();
-        var jobs = new ArrayList<Job>();
+        var jobsIn = new ArrayList<Job>();
+        var jobsOut = new ArrayList<Job>();
         var averageWorkingProcesses = 0.0;
+
         for (Element element : elements) {
             if (element instanceof Create) {
-                results.put(element.getName() + " created", (double) element.getQuantity());
-            /*} else if (element instanceof ChannelProcess) {
-                results.put(element.getName() + " average buffer size", ((ChannelProcess) element).getAverageQueueSize());
-                results.put(element.getName() + " average workload", ((ChannelProcess) element).getAverageWorkload());
-                jobs.addAll(((Process) element).getAllJobs());
+                results.put("Created", (double) element.getQuantity());
+            } else if (element instanceof ChannelProcess) {
+                var workload = ((ChannelProcess) element).getAverageWorkload();
+                averageWorkingProcesses += workload;
+                results.put(element.getName() + " average workload", workload);
+                jobsIn.addAll(((Process) element).getAllJobs());
             } else if (element instanceof DelayProcess) {
-                results.put(element.getName() + " average queue size", ((DelayProcess) element).getAverageQueueSize());
-                results.put(element.getName() + " average workload", ((DelayProcess) element).getAverageWorkload());
-                jobs.addAll(((Process) element).getAllJobs());*/
+                jobsIn.addAll(((Process) element).getAllJobs());
             } else if (element instanceof Dispose) {
-                results.put(element.getName() + " disposed", (double) element.getQuantity());
-                jobs.addAll(((Dispose) element).getAllJobs());
+                jobsIn.addAll(((Dispose) element).getAllJobs());
+                jobsOut.addAll(((Dispose) element).getAllJobs());
             }
         }
+        results.put("Average working processes", averageWorkingProcesses);
+        results.put("Mean job time in system (in)", jobsIn.stream().mapToDouble(this::getJobTimeInModel).average().orElse(0.0));
+        results.put("Max job time in system (in)", jobsIn.stream().mapToDouble(this::getJobTimeInModel).max().orElse(0.0));
+        results.put("Min job time in system (in)", jobsIn.stream().mapToDouble(this::getJobTimeInModel).min().orElse(0.0));
+        results.put("Mean job time in system (out)", jobsOut.stream().mapToDouble(Job::getTimeInModel).average().orElse(0.0));
+        results.put("Max job time in system (out)", jobsOut.stream().mapToDouble(Job::getTimeInModel).max().orElse(0.0));
+        results.put("Min job time in system (out)", jobsOut.stream().mapToDouble(Job::getTimeInModel).min().orElse(0.0));
+        results.put("Disposed", (double) jobsOut.size());
         return results;
     }
 
     public void printResults() {
-        for (Element element : elements) {
-            element.printResult();
+        System.out.println("============MODELLING RESULTS============");
+        var results = getResults();
+        for (var entry : results.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }
 
     public void reset() {
+        tCurr = 0;
         for (Element element : elements) {
             element.reset();
+        }
+    }
+
+    private double getJobTimeInModel(Job job) {
+        if (job.getTimeOut() == Double.MAX_VALUE) {
+            return tCurr - job.getTimeIn();
+        } else {
+            return job.getTimeInModel();
         }
     }
 

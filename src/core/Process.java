@@ -45,4 +45,12 @@ public abstract class Process extends Element {
         return workTime;
     }
 
+    public double getWorkingChannelsSum() {
+        return workingChannelsSum;
+    }
+
+    public double getAverageWorkload() {
+        return workTime / getTCurr();
+    }
+
 }

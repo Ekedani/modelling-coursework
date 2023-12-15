@@ -131,6 +131,10 @@ public class ChannelProcess extends Process {
         return jobs;
     }
 
+    public double getAverageQueueSize() {
+        return queuesSum / getTCurr();
+    }
+
     private Channel getFreeChannel() {
         for (Channel channel : channels) {
             if (channel.getState() == 0) {
