@@ -98,4 +98,35 @@ public class Model {
         }
     }
 
+    public ArrayList<Element> getElements() {
+        return elements;
+    }
+
+    public void addElement(Element element) {
+        elements.add(element);
+    }
+
+    public double getMeanJobTimeInSystem() {
+        var jobsIn = new ArrayList<Job>();
+        for (Element element : elements) {
+            if (element instanceof Dispose) {
+                jobsIn.addAll(((Dispose) element).getAllJobs());
+            } else if (element instanceof ChannelProcess) {
+                jobsIn.addAll(((Process) element).getAllJobs());
+            } else if (element instanceof DelayProcess) {
+                jobsIn.addAll(((Process) element).getAllJobs());
+            }
+        }
+        return jobsIn.stream().mapToDouble(this::getJobTimeInModel).average().orElse(0.0);
+    }
+
+    public double getMeanJobTimeInSystemOut() {
+        var jobsOut = new ArrayList<Job>();
+        for (Element element : elements) {
+            if (element instanceof Dispose) {
+                jobsOut.addAll(((Dispose) element).getAllJobs());
+            }
+        }
+        return jobsOut.stream().mapToDouble(Job::getTimeInModel).average().orElse(0.0);
+    }
 }
