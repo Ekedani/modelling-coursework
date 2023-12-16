@@ -25,11 +25,6 @@ public class Observer extends Element {
     }
 
     @Override
-    public void inAct(Job job) {
-        throw new UnsupportedOperationException("InAct is not supported for Observer");
-    }
-
-    @Override
     public void outAct() {
         for (var observable : observables.entrySet()) {
             try {
@@ -38,8 +33,12 @@ public class Observer extends Element {
                 e.printStackTrace();
             }
         }
-        System.out.println("Observer: " + getTCurr());
         setTNext(getTCurr() + getDelay());
+    }
+
+    @Override
+    public void inAct(Job job) {
+        throw new UnsupportedOperationException("InAct is not supported for Observer");
     }
 
     @Override
