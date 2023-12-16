@@ -1,6 +1,7 @@
 import core.ChannelProcess;
 import core.Model;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,18 +11,18 @@ public class ExperimentHelper {
      * Compare results of two models and return map of differences between them in format:
      * factor name -> [difference, percent difference]
      *
-     * @param a first model results
-     * @param b second model results
-     * @return map of differences between imitation results
+     * @param primary
+     * @param secondary
+     * @return map of differences between imitation results in format: factor name -> [difference, percent difference]
      */
-    public static Map<String, Double[]> compareResults(Map<String, Double> a, Map<String, Double> b) {
+    public static Map<String, Double[]> compareResults(Map<String, Double> primary, Map<String, Double> secondary) {
         var differences = new LinkedHashMap<String, Double[]>();
-        for (var entry : a.entrySet()) {
+        for (var entry : primary.entrySet()) {
             var factor = entry.getKey();
-            var valueA = entry.getValue();
-            var valueB = b.get(factor);
-            var difference = valueA - valueB;
-            var percentDifference = difference / valueA * 100;
+            var baseValue = entry.getValue();
+            var comparisonValue = secondary.get(factor);
+            var difference = comparisonValue - baseValue;
+            var percentDifference = difference / baseValue * 100;
             differences.put(factor, new Double[]{difference, percentDifference});
         }
         return differences;
@@ -66,16 +67,20 @@ public class ExperimentHelper {
     public static Map<String, Double> doNRuns(Model model, double modellingTime, int n) {
         var allResults = new LinkedHashMap<String, List<Double>>();
         for (int i = 0; i < n; i++) {
-            var results = observeOutput(model, modellingTime, modellingTime / 10);
+            model.simulate(modellingTime);
+            var results = model.getResults();
             for (var entry : results.entrySet()) {
                 var factor = entry.getKey();
                 var value = entry.getValue();
                 if (allResults.containsKey(factor)) {
-                    allResults.get(factor).addAll(value);
+                    allResults.get(factor).add(value);
                 } else {
-                    allResults.put(factor, value);
+                    var values = new ArrayList<Double>();
+                    values.add(value);
+                    allResults.put(factor, values);
                 }
             }
+            model.reset();
         }
         var averageResults = new LinkedHashMap<String, Double>();
         for (var entry : allResults.entrySet()) {

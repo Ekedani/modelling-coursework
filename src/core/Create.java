@@ -17,6 +17,7 @@ public abstract class Create extends Element {
     public void reset() {
         super.reset();
         failures = 0;
+        setTNext(0.0);
     }
 
     public int getFailures() {

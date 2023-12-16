@@ -58,6 +58,12 @@ public class Dispose extends Element {
         return processedJobs.size();
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        processedJobs.clear();
+    }
+
     public List<Job> getAllJobs() {
         return processedJobs;
     }
